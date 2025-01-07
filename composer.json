@@ -1,0 +1,9 @@
+{
+    "name": "p2101440/projet",
+    "description": "Projet final",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "twig/twig": "^3.0"
+    }
+}
