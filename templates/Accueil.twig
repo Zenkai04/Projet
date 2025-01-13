@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accueil</title>
-    <link rel="stylesheet" href="{{ routes.bootstrap }}">
-    <link rel="stylesheet" href="{{ routes.css }}/styles.scss">
-    <link rel="icon" href="{{ routes.images }}/logo.ico" type="image/x-icon">
-</head>
-<body>
-</body>
-</html>
+{% extends 'base.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+    <h2>Bienvenue sur notre site des restaurants de Lyon</h2>
+    <p>Découvrez les meilleurs restaurants de Lyon autour de vous.</p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.twig' %}
+
+{% block title %}Menu{% endblock %}
+
+{% block content %}
+    <h2>Menu du Restaurant</h2>
+    <ul>
+        <li>Plat 1: {{ menu.dish1 }}</li>
+        <li>Plat 2: {{ menu.dish2 }}</li>
+        <li>Plat 3: {{ menu.dish3 }}</li>
+        <!-- Ajoutez plus de plats ici -->
+    </ul>
+{% endblock %}
