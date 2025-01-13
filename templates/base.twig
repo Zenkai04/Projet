@@ -7,6 +7,15 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        .nav-link.active {
+            color: white !important;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <header class="bg-primary text-white text-center py-3">
@@ -32,7 +41,9 @@
         </nav>
     </header>
     <main class="container mt-4">
-        {% block content %}{% endblock %}
+        {% block content %}
+        <div id="map"></div>
+        {% endblock %}
     </main>
     <footer class="bg-dark text-white text-center py-3 mt-4">
         <p>© 2025 Mon Site de Restaurants</p>
@@ -41,5 +52,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="../public/javascript/javascript.js"></script>
+  
 </body>
 </html>
