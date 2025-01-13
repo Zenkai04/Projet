@@ -1,7 +1,7 @@
 <?php
 require_once '../vendor/autoload.php';
 
-$loader = new \Twig\Loader\FilesystemLoader('templates');
+$loader = new \Twig\Loader\FilesystemLoader('../templates');
 $twig = new \Twig\Environment($loader);
 
 $page = $_GET['page'] ?? 'home';
