@@ -30,6 +30,9 @@ switch ($page) {
         echo $twig->render('menu.twig', ['menu' => $menu]);
         break;
     case 'home':
+    case 'contact':
+        echo $twig->render($page . '.twig');
+        break;
     default:
         echo $twig->render('home.twig');
         break;
