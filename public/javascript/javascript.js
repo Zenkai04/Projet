@@ -10,6 +10,7 @@ $(document).ready(function() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+
     // Overpass API query to get restaurants in Lyon
     var overpassUrl = "https://overpass-api.de/api/interpreter?data=[out:json];area[name='Lyon']->.searchArea;node[amenity='restaurant'](area.searchArea);out body;";
 
@@ -25,6 +26,14 @@ $(document).ready(function() {
             // Add restaurant to the list
             var listItem = $('<li></li>').text(restaurant.tags.name || "Restaurant");
             restaurantList.append(listItem);
+        });
+
+    var restaurants = {{ restaurants|json_encode|raw }};
+        restaurants.forEach(function(restaurant) {
+            var marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
+            marker.bindPopup(restaurant.tags.name || "Restaurant");
+
+            
         });
     });
 });
