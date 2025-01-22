@@ -1,6 +1,8 @@
 <?php
 require_once '../vendor/autoload.php';
 
+use App\Controller\HomeController;
+
 $loader = new \Twig\Loader\FilesystemLoader('../templates');
 $twig = new \Twig\Environment($loader);
 
@@ -31,9 +33,11 @@ switch ($page) {
         break;
     case 'home':
     case 'contact':
-        echo $twig->render($page . '.twig');
+        $controller = new HomeController();
+        $controller->index();
         break;
     default:
-        echo $twig->render('home.twig');
+        $controller = new HomeController();
+        $controller->index();
         break;
 }

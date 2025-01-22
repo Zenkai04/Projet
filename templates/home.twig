@@ -6,6 +6,11 @@
     <h2 class="my-4">Bienvenue sur notre site des restaurants de Lyon</h2>
     <p>Découvrez les meilleurs restaurants de Lyon autour de vous.</p>
     <div id="map" style="height: 500px;"></div>
+    <ul id="restaurant-list">
+        {% for restaurant in restaurants %}
+            <li>{{ restaurant.tags.name }} - {{ restaurant.tags['addr:street']|default('Adresse inconnue') }}</li>
+        {% endfor %}
+    </ul> <!-- Section for restaurant list -->
     <script>
         var map = L.map('map').setView([45.75, 4.85], 13); // Coordinates for Lyon
 
@@ -13,16 +18,10 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Example markers
-        var restaurants = [
-            {coords: [45.75, 4.85], popup: 'Un excellent restaurant.'},
-            {coords: [45.76, 4.84], popup: 'Un autre restaurant.'},
-            {coords: [45.77, 4.83], popup: 'Encore un autre restaurant.'}
-        ];
-
+        var restaurants = {{ restaurants|json_encode|raw }};
         restaurants.forEach(function(restaurant) {
-            L.marker(restaurant.coords).addTo(map)
-                .bindPopup(restaurant.popup);
+            var marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
+            marker.bindPopup(restaurant.tags.name || "Restaurant");
         });
     </script>
 {% endblock %}
