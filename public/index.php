@@ -2,6 +2,7 @@
 require_once '../vendor/autoload.php';
 
 use App\Controller\HomeController;
+use App\Controller\RestaurantController;
 
 $loader = new \Twig\Loader\FilesystemLoader('../templates');
 $twig = new \Twig\Environment($loader);
@@ -11,7 +12,8 @@ $id = $_GET['id'] ?? null;
 
 switch ($page) {
     case 'restaurants':
-        echo $twig->render('restaurants.twig');
+        $controller = new RestaurantController();
+        $controller->list();
         break;
     case 'restaurant_details':
         // Vous devriez obtenir les détails du restaurant de votre base de données ou d'une source de données ici

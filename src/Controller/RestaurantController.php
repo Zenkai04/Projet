@@ -5,7 +5,7 @@ namespace App\Controller;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class HomeController
+class RestaurantController
 {
     private $twig;
 
@@ -15,7 +15,7 @@ class HomeController
         $this->twig = new Environment($loader);
     }
 
-    public function index()
+    public function list()
     {
         // URL de l'Overpass API
         $url = 'https://overpass-api.de/api/interpreter';
@@ -45,8 +45,6 @@ class HomeController
         $restaurants = isset($data['elements']) ? $data['elements'] : [];
 
         // Passer les données à la vue Twig
-        echo $this->twig->render('Home.twig', ['restaurants' => $restaurants]);
+        echo $this->twig->render('restaurants.twig', ['restaurants' => $restaurants]);
     }
 }
-
-?>
