@@ -41,7 +41,12 @@ class HomeController
         // Décoder la réponse JSON en tableau PHP
         $data = json_decode($response, true);
 
+        // Vérifiez que la réponse et les éléments ne sont pas null
+        $restaurants = isset($data['elements']) ? $data['elements'] : [];
+
         // Passer les données à la vue Twig
-        echo $this->twig->render('home.twig', ['restaurants' => $data['elements']]);
+        echo $this->twig->render('home.twig', ['restaurants' => $restaurants]);
     }
 }
+
+?>
