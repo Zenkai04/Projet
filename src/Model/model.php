@@ -1,3 +1,5 @@
+<?php
+
 // Function to fetch restaurant data from Overpass API and populate the database
 function populateRestaurantData($pdo) {
     // Overpass API endpoint to fetch restaurants (change to your region or coordinates)
@@ -44,3 +46,5 @@ function populateRestaurantData($pdo) {
 
     echo "Data has been inserted into the database.\n";
 }
+
+?>
