@@ -10,39 +10,39 @@ $(document).ready(function() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-  
-    
+    // Fonction pour récupérer les restaurants depuis Overpass API
+    function fetchRestaurants() {
+        var overpassUrl = 'https://overpass-api.de/api/interpreter?data=' +
+            encodeURIComponent(`
+                [out:json];
+                node["amenity"="restaurant"](45.70,4.80,45.80,4.90);
+                out body;
+            `);
 
-    // Vérifie si la variable restaurants est définie et contient des données
-    if (typeof restaurants !== 'undefined' && restaurants.length > 0) {
-        var restaurantList = $('#restaurant-list');
-        restaurantList.empty(); // Vider la liste existante
+        $.getJSON(overpassUrl, function(data) {
+            if (data.elements && data.elements.length > 0) {
+                var restaurantList = $('#restaurant-list');
+                restaurantList.empty();
 
-    restaurants.forEach(function(restaurant) {
-            if (restaurant && restaurant.lat && restaurant.lon) {
-                // Ajouter le marqueur sur la carte
-                var marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
-                marker.bindPopup(`<b>${restaurant.tags.name || "Restaurant"}</b><br>${restaurant.tags['addr:street'] || 'Adresse inconnue'}`);
+                data.elements.forEach(function(restaurant) {
+                    if (restaurant && restaurant.lat && restaurant.lon) {
+                        var marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
+                        marker.bindPopup(`<b>${restaurant.tags.name || "Restaurant"}</b><br>${restaurant.tags['addr:street'] || 'Adresse inconnue'}`);
 
-                // Ajouter le restaurant à la liste HTML
-                var listItem = $('<li></li>').text(restaurant.tags.name || "Restaurant inconnu");
-                restaurantList.append(listItem);
+                        var listItem = $('<li></li>').text(restaurant.tags.name || "Restaurant inconnu");
+                        restaurantList.append(listItem);
+                    } else {
+                        console.warn("Données de restaurant incomplètes :", restaurant);
+                    }
+                });
             } else {
-                console.warn("Données de restaurant incomplètes :", restaurant);
+                console.error('Aucun restaurant trouvé dans les données Overpass API.');
             }
+        }).fail(function() {
+            console.error('Erreur lors de la récupération des données depuis Overpass API.');
         });
-
-        // Ajouter les restaurants sur la carte
-    restaurants.forEach(function(restaurant) {
-        var marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
-        marker.bindPopup(`<b>${restaurant.tags.name}</b><br>${restaurant.tags['addr:street']}`);
-        
-        // Ajouter à la liste HTML
-        var listItem = document.createElement('li');
-        listItem.innerHTML = `${restaurant.tags.name} - ${restaurant.tags['addr:street']}`;
-        document.getElementById('restaurant-list').appendChild(listItem);
-    });
-    } else {
-        console.error('Aucun restaurant disponible ou variable "restaurants" non définie.');
     }
+
+    // Appel de la fonction pour récupérer les restaurants
+    fetchRestaurants();
 });

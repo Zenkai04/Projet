@@ -2,50 +2,91 @@
 
 namespace App\Controller;
 
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class HomeController
+class HomeController extends AbstractController
 {
-    private $twig;
-
-    public function __construct()
+    /**
+     * @Route("/", name="home")
+     */
+    public function index(): Response
     {
-        $loader = new FilesystemLoader('../templates');
-        $this->twig = new Environment($loader);
+        set_time_limit(300); // Augmenter la durée maximale d'exécution à 5 minutes
+
+        $query = '[out:json];node["amenity"="restaurant"](45.70,4.80,45.80,4.90);out body;';
+        $url = 'https://overpass-api.de/api/interpreter?data=' . urlencode($query);
+        $response = $this->fetchUrlWithRetry($url);
+
+        if ($response === false) {
+            throw new \Exception("Erreur lors de la récupération des données de l'Overpass API");
+        }
+
+        $data = json_decode($response, true);
+        $restaurants = [];
+
+        if (isset($data['elements'])) {
+            foreach ($data['elements'] as $element) {
+                $address = $this->getAddressFromCoords($element['lat'], $element['lon'], $element['tags']);
+
+                $restaurants[] = [
+                    'name' => $element['tags']['name'] ?? 'Nom inconnu',
+                    'lat' => $element['lat'],
+                    'lon' => $element['lon'],
+                    'address' => $address
+                ];
+            }
+        }
+
+        return $this->render('home/index.html.twig', [
+            'restaurants' => $restaurants,
+        ]);
     }
 
-    public function index()
+    private function getAddressFromCoords(float $lat, float $lon, array $tags): string
     {
-        // URL de l'Overpass API
-        $url = 'https://overpass-api.de/api/interpreter';
+        // Si adresse déjà fournie par Overpass
+        if (isset($tags['addr:street'])) {
+            return ($tags['addr:housenumber'] ?? '') . ' ' .
+                   ($tags['addr:street'] ?? '') . ', ' .
+                   ($tags['addr:postcode'] ?? '') . ' ' .
+                   ($tags['addr:city'] ?? 'Lyon');
+        }
 
-        // Requête Overpass (en JSON)
-        $query = '[out:json];area["name"="Lyon"]->.searchArea;node["amenity"="restaurant"](area.searchArea);out body;';
+        // Sinon, utiliser l'API Nominatim
+        $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={$lat}&lon={$lon}&addressdetails=1";
+        $response = $this->fetchUrlWithRetry($url);
 
-        // Paramètres pour la requête
-        $options = [
-            'http' => [
-                'method'  => 'GET',
-                'header'  => 'Content-type: application/x-www-form-urlencoded',
-                'content' => http_build_query(['data' => $query])
-            ]
-        ];
+        if ($response === false) {
+            return 'Adresse inconnue';
+        }
 
-        // Créer un contexte de flux
-        $context = stream_context_create($options);
-
-        // Récupérer la réponse JSON
-        $response = file_get_contents($url, false, $context);
-
-        // Décoder la réponse JSON en tableau PHP
         $data = json_decode($response, true);
 
-        // Vérifiez que la réponse et les éléments ne sont pas null
-        $restaurants = isset($data['elements']) ? $data['elements'] : [];
+        if (isset($data['address'])) {
+            $addressParts = $data['address'];
+            return ($addressParts['house_number'] ?? '') . ' ' .
+                   ($addressParts['road'] ?? '') . ', ' .
+                   ($addressParts['postcode'] ?? '') . ' ' .
+                   ($addressParts['city'] ?? 'Lyon');
+        }
 
-        // Passer les données à la vue Twig
-        echo $this->twig->render('Home.twig', ['restaurants' => $restaurants]);
+        return 'Adresse inconnue';
+    }
+
+    private function fetchUrlWithRetry(string $url, int $maxRetries = 3, int $delay = 1): ?string
+    {
+        $attempts = 0;
+        while ($attempts < $maxRetries) {
+            $response = @file_get_contents($url);
+            if ($response !== false) {
+                return $response;
+            }
+            $attempts++;
+            sleep($delay);
+        }
+        return false;
     }
 }
 

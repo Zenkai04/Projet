@@ -1,20 +1,19 @@
-{% extends 'Base.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Accueil{% endblock %}
 
-{% block content %}
+{% block body %}
     <h2 class="my-4">Bienvenue sur notre site des restaurants de Lyon</h2>
     <p>Découvrez les meilleurs restaurants de Lyon autour de vous.</p>
     <div id="map" style="height: 500px;"></div>
     <ul id="restaurant-list">
         {% for restaurant in restaurants %}
             {% if restaurant is not null %}
-                <li>{{ restaurant.tags.name }} - {{ restaurant.tags['addr:street']|default('Adresse inconnue') }}</li>
-                <li>{{ restaurant.lat }} {{ restaurant.lon }}</li>
+                <li>{{ restaurant.name }} - {{ restaurant.address }}</li>
             {% endif %}
         {% endfor %}
     </ul> <!-- Section for restaurant list -->
-   <script>
-    var restaurants = {{ restaurants|json_encode|raw }};
-</script>
+    <script>
+        var restaurants = {{ restaurants|json_encode|raw }};
+    </script>
 {% endblock %}
