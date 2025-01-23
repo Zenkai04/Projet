@@ -1,11 +1,12 @@
-{% extends 'Base.twig' %}
+{% extends 'base.twig' %}
 
 {% block title %}Détails du Restaurant{% endblock %}
 
 {% block content %}
     <h2>Détails du Restaurant</h2>
-    <p>Nom: Restaurant {{ restaurant.id }}</p>
+    <p>Nom: {{ restaurant.name }}</p>
     <p>Adresse: {{ restaurant.address }}</p>
-    <p>Description: {{ restaurant.description }}</p>
+    <p>Téléphone: {{ restaurant.phone }}</p>
+    <p>Entrée: {{ restaurant.entree }}</p>
     <p><a href="index.php?page=menu&id={{ restaurant.id }}">Voir le menu</a></p>
 {% endblock %}
