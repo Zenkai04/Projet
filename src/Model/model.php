@@ -2,15 +2,16 @@
 require_once('connect.php');
 
 // Fonction qui retourne les informations des restaurants
-function getRestaurants() {
+function getRestaurants($searchQuery = '') {
     global $pdo;
     try {
-        $req = $pdo->query('SELECT name, latitude, longitude FROM restaurants');
-        $restaurants = $req->fetchAll(PDO::FETCH_ASSOC);
-        
-        if (empty($restaurants)) {
-            die('Aucun restaurant trouvé dans la base de données.');
+        if ($searchQuery) {
+            $req = $pdo->prepare('SELECT name, latitude, longitude FROM restaurants WHERE name LIKE :searchQuery');
+            $req->execute(['searchQuery' => '%' . $searchQuery . '%']);
+        } else {
+            $req = $pdo->query('SELECT name, latitude, longitude FROM restaurants');
         }
+        $restaurants = $req->fetchAll(PDO::FETCH_ASSOC);
 
         return $restaurants;
     } catch (PDOException $e) {
@@ -60,5 +61,4 @@ function authenticateUser($email, $password) {
         die('Erreur SQL : ' . $e->getMessage());
     }
 }
-
 ?>

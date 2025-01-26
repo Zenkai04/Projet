@@ -11,6 +11,18 @@
             height: 600px;
             width: 100%;
         }
+        .no-results {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5em;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -39,7 +51,17 @@
 
     <div class="container mt-4">
         <h1>Carte des Restaurants de Lyon</h1>
-        <div id="map"></div>
+        <form method="get" action="?page=recherche">
+            <div class="form-group">
+                <input type="hidden" name="page" value="recherche">
+                <input type="text" class="form-control" name="search" placeholder="Rechercher un restaurant" value="{{ search_query }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </form>
+        <div id="map" class="mt-4"></div>
+        {% if no_results %}
+            <div class="no-results">Aucun résultat trouvé</div>
+        {% endif %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -71,7 +93,7 @@
                 return bounds.contains([restaurant.latitude, restaurant.longitude]);
             });
 
-            // Limit to 20 restaurants
+            // Limit to 50 restaurants
             visibleRestaurants = visibleRestaurants.slice(0, 50);
 
             // Add markers for visible restaurants
