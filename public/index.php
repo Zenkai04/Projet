@@ -1,45 +1,13 @@
 <?php
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/routes.php';
+require_once __DIR__ . '/../src/model/twig.php';
 
-use App\Controller\HomeController;
-use App\Controller\RestaurantController;
+$page = $_GET['page'] ?? 'accueil';
 
-$loader = new \Twig\Loader\FilesystemLoader('../templates');
-$twig = new \Twig\Environment($loader);
-
-$page = $_GET['page'] ?? 'home';
-$id = $_GET['id'] ?? null;
-
-switch ($page) {
-    case 'restaurants':
-        $controller = new RestaurantController();
-        $controller->list();
-        break;
-    case 'restaurant_details':
-        // Vous devriez obtenir les détails du restaurant de votre base de données ou d'une source de données ici
-        $restaurant = [
-            'id' => $id,
-            'address' => '123 Rue Example, Lyon',
-            'description' => 'Un excellent restaurant.'
-        ];
-        echo $twig->render('restaurant_details.twig', ['restaurant' => $restaurant]);
-        break;
-    case 'menu':
-        // Vous devriez obtenir le menu du restaurant de votre base de données ou d'une source de données ici
-        $menu = [
-            'dish1' => 'Salade',
-            'dish2' => 'Steak',
-            'dish3' => 'Dessert'
-        ];
-        echo $twig->render('menu.twig', ['menu' => $menu]);
-        break;
-    case 'home':
-    case 'contact':
-        $controller = new HomeController();
-        $controller->index();
-        break;
-    default:
-        $controller = new HomeController();
-        $controller->index();
-        break;
+if (array_key_exists($page, $routes)) {
+    echo $twig->render($routes[$page]);
+} else {
+    echo $twig->render('404.twig'); // Vous pouvez créer un template 404.twig pour les pages non trouvées
 }
+?>
