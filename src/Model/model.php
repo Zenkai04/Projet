@@ -1,10 +1,20 @@
 <?php
 require_once('connect.php');
 
-// Fonction qui récupère les restaurants
 function getRestaurants() {
     global $pdo;
-    $req = $pdo->query('SELECT name, latitude, longitude FROM restaurants');
-    return $req->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $req = $pdo->query('SELECT name, latitude, longitude FROM restaurants');
+        $restaurants = $req->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (empty($restaurants)) {
+            die('Aucun restaurant trouvé dans la base de données.');
+        }
+
+        return $restaurants;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
 }
+
 ?>

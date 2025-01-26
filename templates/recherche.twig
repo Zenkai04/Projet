@@ -31,7 +31,7 @@
                     <a class="nav-link" href="?page=contact">Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="?page=deconnexion">Deconnexion</a>
+                    <a class="nav-link" href="?page=deconnexion">Déconnexion</a>
                 </li>
             </ul>
         </div>
@@ -40,19 +40,9 @@
     <div class="container mt-4">
         <h1>Carte des Restaurants de Lyon</h1>
         <div id="map"></div>
-        <h2 class="mt-4">Liste des Restaurants</h2>
-        <ul class="list-group">
-            {% for restaurant in restaurants %}
-                <li class="list-group-item">
-                    <strong>{{ restaurant.name }}</strong>
-                    <br>
-                    Latitude: {{ restaurant.latitude }}, Longitude: {{ restaurant.longitude }}
-                </li>
-            {% endfor %}
-        </ul>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -63,19 +53,41 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Vérification et affichage des restaurants
-        var restaurants = {{ restaurants|json_encode|raw }};
-        console.log(restaurants); // Vérification dans la console du navigateur
+        var allRestaurants = JSON.parse('{{ restaurants|json_encode|e('js') }}');
+        var markers = [];
 
-        restaurants.forEach(function(restaurant) {
-            if (restaurant.latitude && restaurant.longitude) {
-                L.marker([parseFloat(restaurant.latitude), parseFloat(restaurant.longitude)])
+        function updateMarkers() {
+            // Clear existing markers
+            markers.forEach(function(marker) {
+                map.removeLayer(marker);
+            });
+            markers = [];
+
+            // Get the current bounds of the map
+            var bounds = map.getBounds();
+
+            // Filter restaurants within the bounds
+            var visibleRestaurants = allRestaurants.filter(function(restaurant) {
+                return bounds.contains([restaurant.latitude, restaurant.longitude]);
+            });
+
+            // Limit to 20 restaurants
+            visibleRestaurants = visibleRestaurants.slice(0, 50);
+
+            // Add markers for visible restaurants
+            visibleRestaurants.forEach(function(restaurant) {
+                var marker = L.marker([restaurant.latitude, restaurant.longitude])
                     .addTo(map)
-                    .bindPopup(restaurant.name);
-            } else {
-                console.error('Coordonnées manquantes pour:', restaurant);
-            }
-        });
+                    .bindPopup(`<strong>${restaurant.name}</strong>`);
+                markers.push(marker);
+            });
+        }
+
+        // Update markers when the map is moved or zoomed
+        map.on('moveend', updateMarkers);
+
+        // Initial marker update
+        updateMarkers();
     </script>
 </body>
 </html>
