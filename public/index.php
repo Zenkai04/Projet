@@ -6,11 +6,16 @@ require_once __DIR__ . '/../src/model/twig.php';
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
+if (!isset($_SESSION['user']) && $page !== 'connexion-inscription') {
+    header('Location: ?page=connexion-inscription');
+    exit;
+}
+
 $data = [];
 
 
 switch ($page) {
-    case 'accueil':
+    case 'home':
         $data = require_once __DIR__ . '/../src/controller/accueil.php';
         $template = 'accueil.twig';
         break;
@@ -26,9 +31,13 @@ switch ($page) {
         $data = require_once __DIR__ . '/../src/controller/contact.php';
         $template = 'contact.twig';
         break;
+    case 'connexion-inscription':
+        $data = require_once __DIR__ . '/../src/controller/connexion-inscription.php';
+        $template = 'connexion-inscription.twig';
+        break;
     case 'deconnexion':
         session_destroy();
-        header('Location: ?page=connexion');
+        header('Location: ?page=connexion-inscription');
         exit;
     default:
         $data = require_once __DIR__ . '/../src/controller/accueil.php';

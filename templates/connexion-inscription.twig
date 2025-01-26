@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion / Inscription</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .form-container {
+            display: none;
+        }
+        .form-container.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% if error_message %}
+            <div class="alert alert-danger">{{ error_message }}</div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button id="show-login" class="btn btn-secondary">Connexion</button>
+                <button id="show-register" class="btn btn-secondary">Inscription</button>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-6 offset-md-3 form-container" id="login-form">
+                <h2>Connexion</h2>
+                <form method="post" action="?page=connexion-inscription">
+                    <input type="hidden" name="action" value="connexion">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                </form>
+            </div>
+            <div class="col-md-6 offset-md-3 form-container" id="register-form">
+                <h2>Inscription</h2>
+                <form method="post" action="?page=connexion-inscription">
+                    <input type="hidden" name="action" value="inscription">
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmer le mot de passe</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var loginForm = document.getElementById('login-form');
+            var registerForm = document.getElementById('register-form');
+            var showLoginButton = document.getElementById('show-login');
+            var showRegisterButton = document.getElementById('show-register');
+
+            showLoginButton.addEventListener('click', function() {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            });
+
+            showRegisterButton.addEventListener('click', function() {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+            });
+
+            // Show login form by default
+            loginForm.classList.add('active');
+        });
+    </script>
+</body>
+</html>
