@@ -57,26 +57,32 @@
                 <p>Site Web: <a href="{{ restaurant.website }}" target="_blank">{{ restaurant.website }}</a></p>
             {% endif %}
             <p>Note moyenne: {{ averageRating }}</p>
-            <p>Commentaires</p>
-            <a href="?page=commentaire&id={{ restaurant.id }}">Voir les commentaires</a>
-        {% else %}
-            <p>Restaurant non trouvé.</p>
-        {% endif %}
 
             <h2>Noter ce restaurant</h2>
             <form method="post" action="?page=details&id={{ restaurant.id }}">
-    <div class="form-group">
-        <label for="rating">Votre note (sur 5) :</label>
-        <select class="form-control" id="rating" name="rating" required>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Soumettre</button>
-</form>
+                <div class="form-group">
+                    <label for="rating">Votre note (sur 5) :</label>
+                    <select class="form-control" id="rating" name="rating" required>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Soumettre</button>
+            </form>
+
+            <h2>Commentaires</h2>
+            <button type="button" class="btn btn-primary" onclick="loadComments({{ restaurant.id }})">
+                Voir les commentaires
+            </button>
+            <div id="commentsSection" class="mt-4">
+                <!-- Les commentaires seront chargés ici -->
+            </div>
+        {% else %}
+            <p>Restaurant non trouvé.</p>
+        {% endif %}
     </div>
 
     <footer>
@@ -88,5 +94,15 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function loadComments(restaurantId) {
+            fetch(`?page=commentaire&id=${restaurantId}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('commentsSection').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading comments:', error));
+        }
+    </script>
 </body>
 </html>
