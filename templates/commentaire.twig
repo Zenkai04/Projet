@@ -1,0 +1,23 @@
+<!-- filepath: /u:/Mes documents/Projet/templates/commentaire.twig -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments for {{ restaurant.name }}</title>
+</head>
+<body>
+    <h1>Comments for {{ restaurant.name }}</h1>
+    {% if comments is not empty %}
+        <ul>
+            {% for comment in comments %}
+                <li>
+                    <strong>{{ comment.author }}:</strong> {{ comment.content }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No comments available.</p>
+    {% endif %}
+</body>
+</html>
