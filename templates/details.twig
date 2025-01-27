@@ -1,3 +1,4 @@
+<!-- filepath: /u:/Mes documents/Projet/templates/details.twig -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +57,11 @@
                 <p>Site Web: <a href="{{ restaurant.website }}" target="_blank">{{ restaurant.website }}</a></p>
             {% endif %}
             <p>Note moyenne: {{ averageRating }}</p>
-            <p>Commentaires:</p>
+            <p>Commentaires</p>
+            <a href="?page=commentaire&id={{ restaurant.id }}">Voir les commentaires</a>
+        {% else %}
+            <p>Restaurant non trouvé.</p>
+        {% endif %}
 
             <h2>Noter ce restaurant</h2>
             <form method="post" action="?page=details&id={{ restaurant.id }}">
@@ -72,9 +77,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Soumettre</button>
 </form>
-{% else %}
-    <p>Restaurant non trouvé.</p>
-{% endif %}
     </div>
 
     <footer>

@@ -90,8 +90,6 @@ function authenticateUser($email, $password) {
     return false;
 }
 
-
-
 // Fonction qui donne une note à un restaurant
 function rateRestaurant($restaurantId, $userId, $rating) {
     global $pdo;
@@ -104,6 +102,20 @@ function rateRestaurant($restaurantId, $userId, $rating) {
         ]);
 
         return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui retourne les commentaires d'un restaurant selon son id
+function getCommentsByRestaurantId($restaurantId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT * FROM comments WHERE idRestaurant = :restaurantId');
+        $req->execute(['restaurantId' => $restaurantId]);
+        $comments = $req->fetchAll(PDO::FETCH_ASSOC);
+
+        return $comments;
     } catch (PDOException $e) {
         die('Erreur SQL : ' . $e->getMessage());
     }

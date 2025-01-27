@@ -38,6 +38,10 @@ switch ($page) {
         $data = array_merge($data, require_once __DIR__ . '/../src/controller/details.php');
         $template = 'details.twig';
         break;
+    case 'commentaire':
+        $data = array_merge($data, require_once __DIR__ . '/../src/controller/commentaire.php');
+        $template = 'commentaire.twig';
+        break;
     case 'deconnexion':
         session_destroy();
         header('Location: ?page=connexion-inscription');

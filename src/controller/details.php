@@ -7,16 +7,10 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 $restaurantId = $_GET['id'] ?? null;
-$userId = $_SESSION['user_id'] ?? null; // Assurez-vous que l'identifiant est récupéré correctement
+$userId = $_SESSION['user_id'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating']) && $restaurantId && $userId) {
-    $rating = (int)$_POST['rating'];
-    
-    // Debugging output
-    error_log("Restaurant ID: " . $restaurantId);
-    error_log("User ID: " . $userId);
-    error_log("Rating: " . $rating);
-    
+    $rating = (int)$_POST['rating'];    
     rateRestaurant($restaurantId, $userId, $rating);
 }
 

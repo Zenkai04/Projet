@@ -37,14 +37,14 @@ FLUSH PRIVILEGES;
 --
 
 CREATE TABLE `restaurants` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `latitude` float NOT NULL,
-  `longitude` float NOT NULL,
-  `website` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `cuisine` varchar(255) DEFAULT NULL
+  id bigint(20) UNSIGNED NOT NULL,
+  name varchar(255) NOT NULL,
+  address varchar(255) NOT NULL,
+  latitude float NOT NULL,
+  longitude float NOT NULL,
+  website varchar(255) DEFAULT NULL,
+  phone varchar(255) DEFAULT NULL,
+  cuisine varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1855,22 +1855,27 @@ CREATE TABLE IF NOT EXISTS orders (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS comments (
-  id SERIAL PRIMARY KEY,
-  idUser INTEGER NOT NULL,
-  idRestaurant INTEGER NOT NULL,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  idUser INT NOT NULL,
+  idRestaurant BIGINT(20) UNSIGNED NOT NULL,
   content TEXT NOT NULL,
-  reponse INTEGER NOT NULL
-  FOREIGN KEY (reponse) REFERENCES comments(id)
-  FOREIGN KEY (idUser) REFERENCES users(id)
-  FOREIGN KEY (idRestaurant) REFERENCES restaurants(id)
+  reponse BIGINT DEFAULT NULL,
+  FOREIGN KEY (idUser) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (idRestaurant) REFERENCES restaurants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- Ajout de la contrainte après la création
+ALTER TABLE comments 
+ADD CONSTRAINT fk_comments_reponse 
+FOREIGN KEY (reponse) REFERENCES comments(id) ON DELETE CASCADE;
+
 CREATE TABLE IF NOT EXISTS rate (
-  idRestaurant INTEGER NOT NULL,
-  idUser INTEGER NOT NULL,
-  rate INTEGER NOT NULL
-  PRIMARY KEY (idRestaurant, idUser)
-  FOREIGN KEY (idUser) REFERENCES users(id)
-  FOREIGN KEY (idRestaurant) REFERENCES restaurants(id)
+  idRestaurant BIGINT(20) UNSIGNED NOT NULL,  -- Assurer la correspondance avec la table restaurants
+  idUser INT NOT NULL,  -- Assurer la correspondance avec la table users
+  rate TINYINT NOT NULL CHECK (rate BETWEEN 1 AND 5),
+  PRIMARY KEY (idRestaurant, idUser),
+  FOREIGN KEY (idUser) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (idRestaurant) REFERENCES restaurants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 

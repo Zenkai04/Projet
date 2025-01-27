@@ -1,24 +1,29 @@
 <?php
 require_once __DIR__ . '/../model/connect.php';
 require_once __DIR__ . '/../model/twig.php';
+require_once __DIR__ . '/../model/model.php';
 
-$restaurantId = $_GET['restaurant_id'] ?? null;
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+$restaurantId = $_GET['id'] ?? null;
+$userId = $_SESSION['user_id'] ?? null;
+
+$data = [
+    'current_page' => 'commentaire',
+    'user' => $_SESSION['user'] ?? null,
+];
 
 if ($restaurantId) {
-    // Prépare la requête pour sélectionner les commentaires du restaurant
-    $stmt = $pdo->prepare('SELECT * FROM comments WHERE restaurant_id = ?');
-    $stmt->execute([$restaurantId]);
-    $comments = $stmt->fetchAll();
+    $comments = getCommentsByRestaurantId($restaurantId);
+    $restaurant = getRestaurantById($restaurantId);
 
-    $stmt = $pdo->prepare('SELECT * FROM restaurants WHERE id = ?');
-    $stmt->execute([$restaurantId]);
-    $restaurant = $stmt->fetch();
-
-    echo $twig->render('commentaire.twig', [
-        'comments' => $comments,
-        'restaurant' => $restaurant,
-    ]);
+    $data['comments'] = $comments;
+    $data['restaurant'] = $restaurant;
 } else {
-    echo "Restaurant ID is required.";
+    $data['error_message'] = "Restaurant ID is required.";
 }
+
+return $data;
 ?>
