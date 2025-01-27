@@ -61,4 +61,18 @@ function authenticateUser($email, $password) {
         die('Erreur SQL : ' . $e->getMessage());
     }
 }
+
+// Fonction qui retourne les informations d'un restaurant
+function getRestaurantById($restaurantId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT name, cuisine, latitude, longitude FROM restaurants WHERE id = :id');
+        $req->execute(['id' => $restaurantId]);
+        $restaurant = $req->fetch(PDO::FETCH_ASSOC);
+
+        return $restaurant;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
 ?>

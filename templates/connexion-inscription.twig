@@ -12,6 +12,13 @@
         .form-container.active {
             display: block;
         }
+        .welcome-container {
+            text-align: center;
+        }
+        .logo {
+            width: 200px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
     </style>
 </head>
 <body>
@@ -20,56 +27,67 @@
             <div class="alert alert-danger">{{ error_message }}</div>
         {% endif %}
         <div class="row">
-            <div class="col-md-12 text-center">
-                <button id="show-login" class="btn btn-secondary">Connexion</button>
-                <button id="show-register" class="btn btn-secondary">Inscription</button>
+            <div class="col-md-6 welcome-container">
+                <h2>Bienvenue sur LyonEats</h2>
+                <img src="../public/images/logo1.png" alt="LyonEats Logo" class="img-fluid logo mt-4">
             </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-6 offset-md-3 form-container" id="login-form">
-                <h2>Connexion</h2>
-                <form method="post" action="?page=connexion-inscription">
-                    <input type="hidden" name="action" value="connexion">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Mot de passe</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Se connecter</button>
-                </form>
-            </div>
-            <div class="col-md-6 offset-md-3 form-container" id="register-form">
-                <h2>Inscription</h2>
-                <form method="post" action="?page=connexion-inscription">
-                    <input type="hidden" name="action" value="inscription">
-                    <div class="form-group">
-                        <label for="nom">Nom</label>
-                        <input type="text" class="form-control" id="nom" name="nom" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="prenom">Prénom</label>
-                        <input type="text" class="form-control" id="prenom" name="prenom" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Mot de passe</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirmer le mot de passe</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">S'inscrire</button>
-                </form>
+            <div class="col-md-6">
+                <div class="text-center mb-4">
+                    <button id="show-login" class="btn btn-secondary">Connexion</button>
+                    <button id="show-register" class="btn btn-secondary">Inscription</button>
+                </div>
+                <div class="form-container" id="login-form">
+                    <h2>Connexion</h2>
+                    <form method="post" action="?page=connexion-inscription">
+                        <input type="hidden" name="action" value="connexion">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Se connecter</button>
+                    </form>
+                </div>
+                <div class="form-container" id="register-form">
+                    <h2>Inscription</h2>
+                    <form method="post" action="?page=connexion-inscription">
+                        <input type="hidden" name="action" value="inscription">
+                        <div class="form-group">
+                            <label for="nom">Nom</label>
+                            <input type="text" class="form-control" id="nom" name="nom" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prenom">Prénom</label>
+                            <input type="text" class="form-control" id="prenom" name="prenom" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Confirmer le mot de passe</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+
+    <footer>
+        <div class="container fixed-bottom">
+            <p>&copy; 2023 LyonEats. Tous droits réservés.</p>
+        </div>
+    </footer>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

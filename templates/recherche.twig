@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1;
+            padding-top: 70px; /* Adjust this value if needed */
+        }
         #map {
             height: 600px;
             width: 100%;
@@ -23,11 +33,17 @@
             font-size: 1.5em;
             z-index: 1000;
         }
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="?page=accueil">Restaurants Lyon</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="?page=accueil">LyonEats</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -49,7 +65,7 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container content mt-4">
         <h1>Carte des Restaurants de Lyon</h1>
         <form method="get" action="?page=recherche">
             <div class="form-group">
@@ -63,6 +79,12 @@
             <div class="no-results">Aucun résultat trouvé</div>
         {% endif %}
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 LyonEats. Tous droits réservés.</p>
+        </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -100,7 +122,7 @@
             visibleRestaurants.forEach(function(restaurant) {
                 var marker = L.marker([restaurant.latitude, restaurant.longitude])
                     .addTo(map)
-                    .bindPopup(`<strong>${restaurant.name}</strong>`);
+                    .bindPopup(`<strong>${restaurant.name}</strong><br><a href="?page=details&id=${restaurant.id}">Détails</a>`);
                 markers.push(marker);
             });
         }
