@@ -48,21 +48,27 @@ function getAverageRating($restaurantId) {
 }
 
 // Fonction qui enregistre un utilisateur
-function registerUser($nom, $prenom, $email, $password, $role) {
+function registerUser($nom, $prenom, $email, $pseudo, $password, $role) {
     global $pdo;
     try {
-        $req = $pdo->prepare('INSERT INTO users (nom, prenom, email, password, role) VALUES (:nom, :prenom, :email, :password, :role)');
+        $req = $pdo->prepare('INSERT INTO users (nom, prenom, email, pseudo, password, role) VALUES (:nom, :prenom, :email, :pseudo, :password, :role)');
         $req->execute([
             'nom' => $nom,
             'prenom' => $prenom,
             'email' => $email,
+            'pseudo' => $pseudo,
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'role' => $role,
         ]);
 
+        // Retourner toutes les informations utiles de l'utilisateur
         return [
             'id' => $pdo->lastInsertId(),
+            'nom' => $nom,
+            'prenom' => $prenom,
             'email' => $email,
+            'pseudo' => $pseudo,
+            'role' => $role
         ];
     } catch (PDOException $e) {
         die('Erreur SQL : ' . $e->getMessage());
@@ -72,23 +78,19 @@ function registerUser($nom, $prenom, $email, $password, $role) {
 // Fonction qui authentifie un utilisateur
 function authenticateUser($email, $password) {
     global $pdo;
-    try {
-        $req = $pdo->prepare('SELECT id, email, password FROM users WHERE email = :email');
-        $req->execute(['email' => $email]);
-        $user = $req->fetch(PDO::FETCH_ASSOC);
+    $req = $pdo->prepare('SELECT id, nom, prenom, email, password, role FROM users WHERE email = :email');
+    $req->execute(['email' => $email]);
+    $user = $req->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
-            return [
-                'id' => $user['id'],
-                'email' => $user['email'],
-            ];
-        }
-
-        return false;
-    } catch (PDOException $e) {
-        die('Erreur SQL : ' . $e->getMessage());
+    if ($user && password_verify($password, $user['password'])) {
+        unset($user['password']); // Supprimer le mot de passe pour la sécurité
+        return $user;
     }
+
+    return false;
 }
+
+
 
 // Fonction qui donne une note à un restaurant
 function rateRestaurant($restaurantId, $userId, $rating) {

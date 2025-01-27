@@ -7,7 +7,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 $restaurantId = $_GET['id'] ?? null;
-$userId = $_SESSION['user_id'] ?? null;
+$userId = $_SESSION['user_id'] ?? null; // Assurez-vous que l'identifiant est récupéré correctement
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating']) && $restaurantId && $userId) {
     $rating = (int)$_POST['rating'];
