@@ -6,14 +6,42 @@ function getRestaurants($searchQuery = '') {
     global $pdo;
     try {
         if ($searchQuery) {
-            $req = $pdo->prepare('SELECT name, latitude, longitude FROM restaurants WHERE name LIKE :searchQuery');
+            $req = $pdo->prepare('SELECT id, name, latitude, longitude FROM restaurants WHERE name LIKE :searchQuery');
             $req->execute(['searchQuery' => '%' . $searchQuery . '%']);
         } else {
-            $req = $pdo->query('SELECT name, latitude, longitude FROM restaurants');
+            $req = $pdo->query('SELECT id, name, latitude, longitude FROM restaurants');
         }
         $restaurants = $req->fetchAll(PDO::FETCH_ASSOC);
 
         return $restaurants;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui retourne les informations d'un restaurant par son ID
+function getRestaurantById($restaurantId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT * FROM restaurants WHERE id = :id');
+        $req->execute(['id' => $restaurantId]);
+        $restaurant = $req->fetch(PDO::FETCH_ASSOC);
+
+        return $restaurant;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui retourne la note moyenne d'un restaurant
+function getAverageRating($restaurantId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT AVG(rate) AS average FROM rate WHERE idRestaurant = :restaurantId');
+        $req->execute(['restaurantId' => $restaurantId]);
+        $average = $req->fetch(PDO::FETCH_ASSOC);
+
+        return $average['average'];
     } catch (PDOException $e) {
         die('Erreur SQL : ' . $e->getMessage());
     }
@@ -62,15 +90,18 @@ function authenticateUser($email, $password) {
     }
 }
 
-// Fonction qui retourne les informations d'un restaurant
-function getRestaurantById($restaurantId) {
+// Fonction qui donne une note à un restaurant
+function rateRestaurant($restaurantId, $userId, $rating) {
     global $pdo;
     try {
-        $req = $pdo->prepare('SELECT name, cuisine, latitude, longitude FROM restaurants WHERE id = :id');
-        $req->execute(['id' => $restaurantId]);
-        $restaurant = $req->fetch(PDO::FETCH_ASSOC);
+        $req = $pdo->prepare('INSERT INTO rate (idRestaurant, idUser, rate) VALUES (:restaurantId, :userId, :rating)');
+        $req->execute([
+            'restaurantId' => $restaurantId,
+            'userId' => $userId,
+            'rating' => $rating,
+        ]);
 
-        return $restaurant;
+        return true;
     } catch (PDOException $e) {
         die('Erreur SQL : ' . $e->getMessage());
     }

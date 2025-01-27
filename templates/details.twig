@@ -51,10 +51,30 @@
         {% if restaurant %}
             <h1>{{ restaurant.name }}</h1>
             <p>Adresse: {{ restaurant.address }}</p>
+            <p>Téléphone: {{ restaurant.phone }}</p>
+            {% if restaurant.website %}
+                <p>Site Web: <a href="{{ restaurant.website }}" target="_blank">{{ restaurant.website }}</a></p>
+            {% endif %}
+            <p>Note moyenne: {{ averageRating }}</p>
             <p>Commentaires:</p>
-        {% else %}
-            <p>Restaurant non trouvé.</p>
-        {% endif %}
+
+            <h2>Noter ce restaurant</h2>
+            <form method="post" action="?page=details&id={{ restaurant.id }}">
+    <div class="form-group">
+        <label for="rating">Votre note (sur 5) :</label>
+        <select class="form-control" id="rating" name="rating" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Soumettre</button>
+</form>
+{% else %}
+    <p>Restaurant non trouvé.</p>
+{% endif %}
     </div>
 
     <footer>
