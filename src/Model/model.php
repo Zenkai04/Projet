@@ -107,20 +107,6 @@ function rateRestaurant($restaurantId, $userId, $rating) {
     }
 }
 
-// Fonction qui retourne les commentaires d'un restaurant selon son id
-function getCommentsByRestaurantId($restaurantId) {
-    global $pdo;
-    try {
-        $req = $pdo->prepare('SELECT * FROM comments WHERE idRestaurant = :restaurantId');
-        $req->execute(['restaurantId' => $restaurantId]);
-        $comments = $req->fetchAll(PDO::FETCH_ASSOC);
-
-        return $comments;
-    } catch (PDOException $e) {
-        die('Erreur SQL : ' . $e->getMessage());
-    }
-}
-
 // Fonction qui vérifie si un utilisateur a déjà noté un restaurant
 function hasUserRatedRestaurant($restaurantId, $userId) {
     global $pdo;
@@ -150,6 +136,65 @@ function updateRestaurantRating($restaurantId, $userId, $rating) {
         ]);
 
         return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui ajoute un commentaire ou une réponse à un commentaire
+function addComment($restaurantId, $userId, $content, $parentId = null) {
+    global $pdo;
+    try {
+        $reponse = $parentId ? 1 : 0;
+        $req = $pdo->prepare('INSERT INTO comments (idRestaurant, idUser, content, idComment, reponse) VALUES (:restaurantId, :userId, :content, :parentId, :reponse)');
+        $req->execute([
+            'restaurantId' => $restaurantId,
+            'userId' => $userId,
+            'content' => $content,
+            'parentId' => $parentId,
+            'reponse' => $reponse,
+        ]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui récupère les commentaires d'un restaurant avec les réponses imbriquées
+function getCommentsByRestaurantId($restaurantId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT c.*, u.pseudo AS author FROM comments c JOIN users u ON c.idUser = u.id WHERE c.idRestaurant = :restaurantId ORDER BY c.date DESC');
+        $req->execute(['restaurantId' => $restaurantId]);
+        $comments = $req->fetchAll(PDO::FETCH_ASSOC);
+
+        // Organiser les commentaires et leurs réponses
+        $commentsById = [];
+        foreach ($comments as $comment) {
+            $commentsById[$comment['id']] = $comment;
+            $commentsById[$comment['id']]['responses'] = [];
+        }
+
+        foreach ($comments as $comment) {
+            if ($comment['idComment']) {
+                $commentsById[$comment['idComment']]['responses'][] = $comment;
+            }
+        }
+
+        // Fonction récursive pour organiser les réponses imbriquées
+        function nestComments($comments, $parentId = null) {
+            $nested = [];
+            foreach ($comments as $comment) {
+                if ($comment['idComment'] == $parentId) {
+                    $comment['responses'] = nestComments($comments, $comment['id']);
+                    $nested[] = $comment;
+                }
+            }
+            return $nested;
+        }
+
+        return nestComments($comments);
     } catch (PDOException $e) {
         die('Erreur SQL : ' . $e->getMessage());
     }

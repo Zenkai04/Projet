@@ -1,0 +1,22 @@
+<li class="list-group-item comment-box">
+    <div class="comment-author">{{ comment.author }} - {{ comment.date }}</div>
+    <div>{{ comment.content }}</div>
+    <button class="btn btn-link" onclick="showReplyForm({{ comment.id }})">Répondre</button>
+    <div id="reply-form-{{ comment.id }}" class="reply-form" style="display: none;">
+        <form method="post" action="?page=details&id={{ restaurant.id }}">
+            <div class="form-group">
+                <textarea class="form-control" name="content" rows="2" placeholder="Votre réponse" required></textarea>
+                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Valider</button>
+            <button type="button" class="btn btn-secondary" onclick="hideReplyForm({{ comment.id }})">Annuler</button>
+        </form>
+    </div>
+    {% if comment.responses is not empty %}
+        <ul class="list-group mt-2 nested-comment">
+            {% for response in comment.responses %}
+                {% include 'comment.twig' with { 'comment': response, 'restaurant': restaurant } %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>

@@ -10,6 +10,22 @@
             flex: 1;
             padding-top: 70px; /* Adjust this value if needed */
         }
+        .comment-box {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-author {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .reply-form {
+            margin-top: 10px;
+        }
+        .nested-comment {
+            margin-left: 20px;
+        }
     </style>
 </head>
 <body>
@@ -18,16 +34,36 @@
         {% if comments is not empty %}
             <ul class="list-group">
                 {% for comment in comments %}
-                    <li class="list-group-item">
-                        <strong>{{ comment.author }}:</strong> {{ comment.content }}
-                    </li>
+                    {% include 'comment.twig' with { 'comment': comment, 'restaurant': restaurant } %}
                 {% endfor %}
             </ul>
         {% else %}
             <p>Personne n'a encore commenté, soyez le premier !</p>
         {% endif %}
+
+        {% if user %}
+            <h2>Ajouter un commentaire</h2>
+            <form method="post" action="?page=details&id={{ restaurant.id }}">
+                <div class="form-group">
+                    <textarea class="form-control" name="content" rows="3" placeholder="Votre commentaire" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Valider</button>
+                <button type="button" class="btn btn-secondary" onclick="this.form.reset()">Annuler</button>
+            </form>
+        {% else %}
+            <p>Vous devez être connecté pour ajouter un commentaire.</p>
+        {% endif %}
     </div>
 
+    <script>
+        function showReplyForm(commentId) {
+            document.getElementById('reply-form-' + commentId).style.display = 'block';
+        }
+
+        function hideReplyForm(commentId) {
+            document.getElementById('reply-form-' + commentId).style.display = 'none';
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

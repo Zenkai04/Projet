@@ -1859,7 +1859,9 @@ CREATE TABLE IF NOT EXISTS comments (
   idUser INT NOT NULL,
   idRestaurant BIGINT(20) UNSIGNED NOT NULL,
   content TEXT NOT NULL,
-  reponse BIGINT DEFAULT NULL,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  reponse INT DEFAULT 0,
+  idComment BIGINT DEFAULT NULL,
   FOREIGN KEY (idUser) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (idRestaurant) REFERENCES restaurants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1867,7 +1869,7 @@ CREATE TABLE IF NOT EXISTS comments (
 -- Ajout de la contrainte après la création
 ALTER TABLE comments 
 ADD CONSTRAINT fk_comments_reponse 
-FOREIGN KEY (reponse) REFERENCES comments(id) ON DELETE CASCADE;
+FOREIGN KEY (idComment) REFERENCES comments(id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS rate (
   idRestaurant BIGINT(20) UNSIGNED NOT NULL,  -- Assurer la correspondance avec la table restaurants

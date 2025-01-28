@@ -1,0 +1,8 @@
+1. Problème à importer des données précises depuis l'api (adresses des restaurants presque toujours absente)
+Solution : utiliser un script php qui a tourné 1h pour d'abord récupérer les restaurants avec leur position pour ensuite associer cette position à une adresse
+
+2. Processus de récupération des données trop long
+Solution : enregistrer en local
+
+3. Ajout des commentaires imbriqués (ça demande une boucle pour afficher chaque bloque réponse)
+Solution : creer un template à part pour afficher les réponses imbriquées
