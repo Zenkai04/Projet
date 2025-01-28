@@ -7,7 +7,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            padding-top: 70px; /* Ajustez cette valeur en fonction de la hauteur de votre barre de navigation */
+            padding-top: 70px;
+            padding-bottom: 90px;
+        }
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -48,7 +55,11 @@
             {% if restaurant.website %}
                 <p>Site Web: <a href="{{ restaurant.website }}" target="_blank">{{ restaurant.website }}</a></p>
             {% endif %}
+            <p>Cuisine: {{ restaurant.cuisine }}</p>
+            <p>Prix : {{ restaurant.prix }}</p>
             <p>Note moyenne: {{ averageRating }}</p>
+            <p>Votre note: {{ rate }}</p>
+            
 
             <h2>Noter ce restaurant</h2>
             {% if errorMessage %}
@@ -83,8 +94,14 @@
             {% endif %}
 
             <h2>Commentaires</h2>
-            <button type="button" class="btn btn-primary" onclick="loadComments({{ restaurant.id }})">
+            {% if successMessage %}
+                <div class="alert alert-success" id="successMessage">{{ successMessage }}</div>
+            {% endif %}
+            <button type="button" class="btn btn-primary" id="loadCommentsButton" data-loaded="false" onclick="loadComments({{ restaurant.id }})">
                 Voir les commentaires
+            </button>
+            <button type="button" class="btn btn-secondary" id="hideCommentsButton" style="display: none;" onclick="hideComments()">
+                Cacher les commentaires
             </button>
             <div id="commentsSection" class="mt-4">
                 <!-- Les commentaires seront chargés ici -->
@@ -94,24 +111,64 @@
         {% endif %}
     </div>
 
-    <footer>
+    <footer class = "footer fixed-bottom">
         <div class="container">
             <p>&copy; 2023 LyonEats. Tous droits réservés.</p>
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         function loadComments(restaurantId) {
+            const loadCommentsButton = document.getElementById('loadCommentsButton');
+            const hideCommentsButton = document.getElementById('hideCommentsButton');
+            if (loadCommentsButton.getAttribute('data-loaded') === 'true') {
+                document.getElementById('commentsSection').style.display = 'block';
+                loadCommentsButton.style.display = 'none';
+                hideCommentsButton.style.display = 'inline-block';
+                return;
+            }
+
             fetch(`?page=commentaire&id=${restaurantId}`)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('commentsSection').innerHTML = data;
+                    document.getElementById('commentsSection').style.display = 'block';
+                    loadCommentsButton.setAttribute('data-loaded', 'true');
+                    loadCommentsButton.style.display = 'none';
+                    hideCommentsButton.style.display = 'inline-block';
                 })
                 .catch(error => console.error('Error loading comments:', error));
         }
+
+        function hideComments() {
+            document.getElementById('commentsSection').style.display = 'none';
+            document.getElementById('loadCommentsButton').style.display = 'inline-block';
+            document.getElementById('hideCommentsButton').style.display = 'none';
+        }
+
+        // Disparition du message de succès après 2 secondes
+        document.addEventListener('DOMContentLoaded', function() {
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 2000);
+            }
+        });
+
+        function showReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form) {
+        form.style.display = 'block';
+    }
+}
+
+function hideReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form) {
+        form.style.display = 'none';
+    }
+}
     </script>
 </body>
 </html>

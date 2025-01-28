@@ -36,7 +36,7 @@ FLUSH PRIVILEGES;
 -- Structure de la table `restaurants`
 --
 
-CREATE TABLE `restaurants` (
+CREATE TABLE restaurants (
   id bigint(20) UNSIGNED NOT NULL,
   name varchar(255) NOT NULL,
   address varchar(255) NOT NULL,
@@ -1859,7 +1859,9 @@ CREATE TABLE IF NOT EXISTS comments (
   idUser INT NOT NULL,
   idRestaurant BIGINT(20) UNSIGNED NOT NULL,
   content TEXT NOT NULL,
-  reponse BIGINT DEFAULT NULL,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  reponse INT DEFAULT 0,
+  idComment BIGINT DEFAULT NULL,
   FOREIGN KEY (idUser) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (idRestaurant) REFERENCES restaurants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1867,10 +1869,10 @@ CREATE TABLE IF NOT EXISTS comments (
 -- Ajout de la contrainte après la création
 ALTER TABLE comments 
 ADD CONSTRAINT fk_comments_reponse 
-FOREIGN KEY (reponse) REFERENCES comments(id) ON DELETE CASCADE;
+FOREIGN KEY (idComment) REFERENCES comments(id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS rate (
-  idRestaurant BIGINT(20) UNSIGNED NOT NULL,  -- Assurer la correspondance avec la table restaurants
+  idRestaurant BIGINT(20) UNSIGNED NOT NULL, 
   idUser INT NOT NULL,  -- Assurer la correspondance avec la table users
   rate TINYINT NOT NULL CHECK (rate BETWEEN 1 AND 5),
   PRIMARY KEY (idRestaurant, idUser),
@@ -1878,4 +1880,31 @@ CREATE TABLE IF NOT EXISTS rate (
   FOREIGN KEY (idRestaurant) REFERENCES restaurants(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE IF NOT EXISTS prix (
+  idRestaurant BIGINT(20) UNSIGNED NOT NULL,
+  prix VARCHAR(255),
+  PRIMARY KEY (idRestaurant),
+  FOREIGN KEY (idRestaurant) REFERENCES restaurants(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Insérer les prix en fonction des critères spécifiés avec priorité
+INSERT INTO prix (idRestaurant, prix)
+SELECT r.id, 
+       CASE 
+           WHEN r.name LIKE '%tacos%' OR r.name LIKE '%pizza%' OR r.name LIKE '%brasserie%' OR r.name LIKE '%burger%' THEN '10 ~ 25'
+           WHEN r.name LIKE '%cafe%' OR r.name LIKE '%sandwich%' THEN '5 ~ 15'
+           WHEN r.name LIKE '%restaurant%' THEN '20 ~ 100'
+           WHEN r.address LIKE '%69001%' OR r.address LIKE '%69002%' OR r.address LIKE '%69003%' OR r.address LIKE '%69004%' OR r.address LIKE '%69005%' OR r.address LIKE '%69006%' OR r.address LIKE '%69007%' OR r.address LIKE '%69008%' OR r.address LIKE '%69009%' THEN '30 ~ 50'
+           ELSE 'non défini'
+       END AS prix
+FROM restaurants r
+ON DUPLICATE KEY UPDATE prix = VALUES(prix);
+
+-- Mettre à jour les prix en fonction de l'adresse si non définis
+UPDATE prix p
+JOIN restaurants r ON p.idRestaurant = r.id
+SET p.prix = '30 ~ 50'
+WHERE p.prix = 'non défini' AND (
+    r.address LIKE '%69001%' OR r.address LIKE '%69002%' OR r.address LIKE '%69003%' OR r.address LIKE '%69004%' OR r.address LIKE '%69005%' OR r.address LIKE '%69006%' OR r.address LIKE '%69007%' OR r.address LIKE '%69008%' OR r.address LIKE '%69009%'
+);
 

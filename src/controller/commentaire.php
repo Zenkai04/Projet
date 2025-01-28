@@ -15,6 +15,12 @@ $data = [
     'user' => $_SESSION['user'] ?? null,
 ];
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['content']) && $restaurantId && $userId) {
+    $content = $_POST['content'];
+    $parentId = $_POST['parent_id'] ?? null;
+    addComment($restaurantId, $userId, $content, $parentId);
+}
+
 if ($restaurantId) {
     $comments = getCommentsByRestaurantId($restaurantId);
     $restaurant = getRestaurantById($restaurantId);

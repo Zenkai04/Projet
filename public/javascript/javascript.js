@@ -19,3 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function showReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form) {
+        form.style.display = 'block';
+    }
+}
+
+function hideReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form) {
+        form.style.display = 'none';
+    }
+}
