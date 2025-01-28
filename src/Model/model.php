@@ -52,6 +52,18 @@ function getAverageRating($restaurantId) {
     }
 }
 
+// Fonction qui vérifie si un email ou un pseudo est déjà utilisé
+function isEmailOrPseudoUsed($email, $pseudo) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = :email OR pseudo = :pseudo');
+        $req->execute(['email' => $email, 'pseudo' => $pseudo]);
+        return $req->fetchColumn() > 0;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
 // Fonction qui enregistre un utilisateur
 function registerUser($nom, $prenom, $email, $pseudo, $password, $role) {
     global $pdo;
@@ -80,11 +92,14 @@ function registerUser($nom, $prenom, $email, $pseudo, $password, $role) {
     }
 }
 
-// Fonction qui authentifie un utilisateur
-function authenticateUser($email, $password) {
+// Fonction qui authentifie un utilisateur par email ou pseudo
+function authenticateUser($login, $password) {
     global $pdo;
-    $req = $pdo->prepare('SELECT id, nom, prenom, email, password, role FROM users WHERE email = :email');
-    $req->execute(['email' => $email]);
+    $req = $pdo->prepare('SELECT id, nom, prenom, email, pseudo, password, role FROM users WHERE email = :email OR pseudo = :pseudo');
+    $req->execute([
+        'email' => $login,
+        'pseudo' => $login,
+    ]);
     $user = $req->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
@@ -287,4 +302,6 @@ function getAllPrixOptions() {
         die('Erreur SQL : ' . $e->getMessage());
     }
 }
+
+
 ?>
