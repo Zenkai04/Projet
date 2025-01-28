@@ -8,10 +8,20 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $restaurantId = $_GET['id'] ?? null;
 $userId = $_SESSION['user_id'] ?? null;
+$errorMessage = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating']) && $restaurantId && $userId) {
-    $rating = (int)$_POST['rating'];    
-    rateRestaurant($restaurantId, $userId, $rating);
+    $rating = (int)$_POST['rating'];
+
+    if (hasUserRatedRestaurant($restaurantId, $userId)) {
+        if (isset($_POST['update_rating'])) {
+            updateRestaurantRating($restaurantId, $userId, $rating);
+        } else {
+            $errorMessage = "Vous avez déjà noté ce restaurant.";
+        }
+    } else {
+        rateRestaurant($restaurantId, $userId, $rating);
+    }
 }
 
 if ($restaurantId) {
@@ -26,6 +36,7 @@ $data = [
     'restaurant' => $restaurant,
     'averageRating' => $averageRating,
     'current_page' => 'details',
+    'errorMessage' => $errorMessage,
 ];
 
 return $data;

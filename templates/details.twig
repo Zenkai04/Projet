@@ -1,4 +1,3 @@
-<!-- filepath: /u:/Mes documents/Projet/templates/details.twig -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,20 +6,8 @@
     <title>Détails du Restaurant</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .content {
-            flex: 1;
-            padding-top: 70px; /* Adjust this value if needed */
-        }
-        footer {
-            background-color: #f8f9fa;
-            padding: 20px 0;
-            text-align: center;
+        body {
+            padding-top: 70px; /* Ajustez cette valeur en fonction de la hauteur de votre barre de navigation */
         }
     </style>
 </head>
@@ -45,6 +32,11 @@
                     <a class="nav-link" href="?page=deconnexion">Déconnexion</a>
                 </li>
             </ul>
+            {% if user %}
+            <span class="navbar-text ml-auto">
+                Bonjour, {{ user.prenom }} {{ user.nom }}
+            </span>
+            {% endif %}
         </div>
     </nav>
 
@@ -59,19 +51,36 @@
             <p>Note moyenne: {{ averageRating }}</p>
 
             <h2>Noter ce restaurant</h2>
-            <form method="post" action="?page=details&id={{ restaurant.id }}">
-                <div class="form-group">
-                    <label for="rating">Votre note (sur 5) :</label>
-                    <select class="form-control" id="rating" name="rating" required>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Soumettre</button>
-            </form>
+            {% if errorMessage %}
+                <div class="alert alert-danger">{{ errorMessage }}</div>
+                <form method="post" action="?page=details&id={{ restaurant.id }}">
+                    <div class="form-group">
+                        <label for="rating">Modifier votre note (sur 5) :</label>
+                        <select class="form-control" id="rating" name="rating" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <button type="submit" name="update_rating" class="btn btn-primary">Mettre à jour</button>
+                </form>
+            {% else %}
+                <form method="post" action="?page=details&id={{ restaurant.id }}">
+                    <div class="form-group">
+                        <label for="rating">Votre note (sur 5) :</label>
+                        <select class="form-control" id="rating" name="rating" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Soumettre</button>
+                </form>
+            {% endif %}
 
             <h2>Commentaires</h2>
             <button type="button" class="btn btn-primary" onclick="loadComments({{ restaurant.id }})">

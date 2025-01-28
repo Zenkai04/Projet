@@ -120,4 +120,38 @@ function getCommentsByRestaurantId($restaurantId) {
         die('Erreur SQL : ' . $e->getMessage());
     }
 }
+
+// Fonction qui vérifie si un utilisateur a déjà noté un restaurant
+function hasUserRatedRestaurant($restaurantId, $userId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT COUNT(*) FROM rate WHERE idRestaurant = :restaurantId AND idUser = :userId');
+        $req->execute([
+            'restaurantId' => $restaurantId,
+            'userId' => $userId,
+        ]);
+        $count = $req->fetchColumn();
+
+        return $count > 0;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui met à jour la note d'un restaurant
+function updateRestaurantRating($restaurantId, $userId, $rating) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('UPDATE rate SET rate = :rating WHERE idRestaurant = :restaurantId AND idUser = :userId');
+        $req->execute([
+            'restaurantId' => $restaurantId,
+            'userId' => $userId,
+            'rating' => $rating,
+        ]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
 ?>
