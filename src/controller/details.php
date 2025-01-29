@@ -8,8 +8,8 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $restaurantId = $_GET['id'] ?? null;
 $userId = $_SESSION['user_id'] ?? null;
-$errorMessage = null;
-$successMessage = null;
+$errorMessage = $_GET['error_message'] ?? null;
+$successMessage = $_GET['success_message'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['rating']) && $restaurantId && $userId) {

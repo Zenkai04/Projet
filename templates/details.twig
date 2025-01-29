@@ -59,7 +59,10 @@
             <p>Prix : {{ restaurant.prix }}</p>
             <p>Note moyenne: {{ averageRating }}</p>
             <p>Votre note: {{ rate }}</p>
-            
+
+            {% if successMessage %}
+                <div class="alert alert-success" id="successMessage">{{ successMessage }}</div>
+            {% endif %}
 
             <h2>Noter ce restaurant</h2>
             {% if errorMessage %}
@@ -93,10 +96,10 @@
                 </form>
             {% endif %}
 
+            <h2>Réserver</h2>
+            <a href="?page=reserver&id={{ restaurant.id }}" class="btn btn-primary">Réserver</a>
+
             <h2>Commentaires</h2>
-            {% if successMessage %}
-                <div class="alert alert-success" id="successMessage">{{ successMessage }}</div>
-            {% endif %}
             <button type="button" class="btn btn-primary" id="loadCommentsButton" data-loaded="false" onclick="loadComments({{ restaurant.id }})">
                 Voir les commentaires
             </button>
@@ -154,21 +157,27 @@
                     successMessage.style.display = 'none';
                 }, 2000);
             }
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 2000);
+            }
         });
 
         function showReplyForm(commentId) {
-    const form = document.getElementById('reply-form-' + commentId);
-    if (form) {
-        form.style.display = 'block';
-    }
-}
+            const form = document.getElementById('reply-form-' + commentId);
+            if (form) {
+                form.style.display = 'block';
+            }
+        }
 
-function hideReplyForm(commentId) {
-    const form = document.getElementById('reply-form-' + commentId);
-    if (form) {
-        form.style.display = 'none';
-    }
-}
+        function hideReplyForm(commentId) {
+            const form = document.getElementById('reply-form-' + commentId);
+            if (form) {
+                form.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

@@ -59,6 +59,12 @@
     </nav>
 
     <div class="container content mt-4">
+        {% if success_message %}
+            <div class="alert alert-success" id="successMessage">{{ success_message }}</div>
+        {% endif %}
+        {% if error_message %}
+            <div class="alert alert-danger" id="errorMessage">{{ error_message }}</div>
+        {% endif %}
         <div class="jumbotron">
             <h1 class="display-4">Bienvenue sur LyonEats</h1>
             <p class="lead">Découvrez les meilleurs restaurants de Lyon grâce à notre application.</p>
@@ -75,5 +81,23 @@
             <p>&copy; 2023 LyonEats. Tous droits réservés.</p>
         </div>
     </footer>
+
+    <script>
+        // Disparition du message de succès après 2 secondes
+        document.addEventListener('DOMContentLoaded', function() {
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 2000);
+            }
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>

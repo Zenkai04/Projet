@@ -303,5 +303,37 @@ function getAllPrixOptions() {
     }
 }
 
+// Fonction qui vérifie si une réservation similaire existe déjà
+function isReservationExists($idUser, $idRestaurant, $dateHeure) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('SELECT COUNT(*) FROM reservations WHERE idUser = :idUser AND idRestaurant = :idRestaurant AND dateHeure = :dateHeure');
+        $req->execute([
+            'idUser' => $idUser,
+            'idRestaurant' => $idRestaurant,
+            'dateHeure' => $dateHeure,
+        ]);
+        return $req->fetchColumn() > 0;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
 
+// Fonction qui enregistre une réservation
+function reserveTable($idUser, $idRestaurant, $nbPersonnes, $dateHeure) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('INSERT INTO reservations (idUser, idRestaurant, nbPersonnes, dateHeure) VALUES (:idUser, :idRestaurant, :nbPersonnes, :dateHeure)');
+        $req->execute([
+            'idUser' => $idUser,
+            'idRestaurant' => $idRestaurant,
+            'nbPersonnes' => $nbPersonnes,
+            'dateHeure' => $dateHeure,
+        ]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
 ?>

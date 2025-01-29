@@ -41,7 +41,11 @@
 <body>
     <div class="container mt-5">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6 welcome-container">
+                <h2>Bienvenue sur LyonEats</h2>
+                <img src="../public/images/logo1.png" alt="LyonEats Logo" class="img-fluid logo mt-4">
+            </div>
+            <div class="col-md-6">
                 <h2 class="text-center">Connexion / Inscription</h2>
                 {% if error_message %}
                     <div class="alert alert-danger">{{ error_message }}</div>
