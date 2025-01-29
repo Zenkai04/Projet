@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion / Inscription</title>
+    <title>Connexion / Inscription - LyonEats</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -58,8 +58,13 @@
                             <input type="text" class="form-control" id="login" name="login" required>
                         </div>
                         <div class="form-group">
-                            <label for="password">Mot de passe</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <label for="login_password">Mot de passe</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="login_password" name="password" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('login_password')">Afficher</button>
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Se connecter</button>
                     </form>
@@ -91,15 +96,25 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            <label for="password">Mot de passe</label>
-                            <input type="password" class="form-control {% if error_field == 'password' %}error{% endif %}" id="password" name="password" required>
+                            <label for="register_password">Mot de passe</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control {% if error_field == 'password' %}error{% endif %}" id="register_password" name="password" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('register_password')">Afficher</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="confirm_password">Confirmer le mot de passe</label>
-                            <input type="password" class="form-control {% if error_field == 'password' %}error{% endif %}" id="confirm_password" name="confirm_password" required>
-                            {% if error_field == 'password' %}
-                                <div class="error-message">Les mots de passe ne correspondent pas.</div>
-                            {% endif %}
+                            <div class="input-group">
+                                <input type="password" class="form-control {% if error_field == 'password' %}error{% endif %}" id="confirm_password" name="confirm_password" required>
+                                {% if error_field == 'password' %}
+                                    <div class="error-message">Les mots de passe ne correspondent pas.</div>
+                                {% endif %}
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('confirm_password')">Afficher</button>
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">S'inscrire</button>
                     </form>
@@ -135,6 +150,15 @@
             // Show login form by default
             loginForm.classList.add('active');
         });
+
+        function togglePasswordVisibility(id) {
+            const passwordField = document.getElementById(id);
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
     </script>
 </body>
 </html>

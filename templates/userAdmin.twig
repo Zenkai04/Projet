@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilisateurs - LyonEats</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="?page=accueil">LyonEats</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=accueil">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=recherche">Chercher</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=deconnexion">Déconnexion</a>
+                </li>
+            </ul>
+            {% if user %}
+            <span class="navbar-text ml-auto">
+                Bonjour, {{ user.prenom }} {{ user.nom }}
+            </span>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Liste des Utilisateurs</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Pseudo</th>
+                    <th>Rôle</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.nom }}</td>
+                    <td>{{ user.prenom }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.pseudo }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="?page=user&id={{ user.id }}" class="btn btn-info btn-sm">Afficher</a>
+                            <button class="btn btn-secondary btn-sm" onclick="showEditUserForm({{ user.id }})">Modifier</button>
+                            <form method="post" action="?page=userAdmin" class="d-inline">
+                                <input type="hidden" name="action" value="delete_user">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                            </form>
+                        </div>
+                        <form id="editUserForm-{{ user.id }}" class="hidden mt-2" method="post" action="?page=userAdmin">
+                            <input type="hidden" name="action" value="edit_user">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <div class="form-group">
+                                <label for="nom-{{ user.id }}">Nom</label>
+                                <input type="text" class="form-control" id="nom-{{ user.id }}" name="nom" value="{{ user.nom }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prenom-{{ user.id }}">Prénom</label>
+                                <input type="text" class="form-control" id="prenom-{{ user.id }}" name="prenom" value="{{ user.prenom }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email-{{ user.id }}">Email</label>
+                                <input type="email" class="form-control" id="email-{{ user.id }}" name="email" value="{{ user.email }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pseudo-{{ user.id }}">Pseudo</label>
+                                <input type="text" class="form-control" id="pseudo-{{ user.id }}" name="pseudo" value="{{ user.pseudo }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="role-{{ user.id }}">Rôle</label>
+                                <select class="form-control" id="role-{{ user.id }}" name="role" required>
+                                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>Utilisateur</option>
+                                    <option value="administrator" {% if user.role == 'administrator' %}selected{% endif %}>Administrateur</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="hideEditUserForm({{ user.id }})">Annuler</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function showEditUserForm(userId) {
+            document.getElementById('editUserForm-' + userId).classList.remove('hidden');
+        }
+
+        function hideEditUserForm(userId) {
+            document.getElementById('editUserForm-' + userId).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

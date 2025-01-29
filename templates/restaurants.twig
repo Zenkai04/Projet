@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurants - LyonEats</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="?page=accueil">LyonEats</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=accueil">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=recherche">Chercher</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=contact">Contact</a>
+                </li>
+                {% if user.role == 'administrator' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=restaurants">Restaurants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=userAdmin">Utilisateurs</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=deconnexion">Déconnexion</a>
+                </li>
+            </ul>
+            {% if user %}
+            <span class="navbar-text ml-auto">
+                Bonjour, {{ user.prenom }} {{ user.nom }}
+            </span>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Liste des Restaurants</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Adresse</th>
+                    <th>Téléphone</th>
+                    <th>Site Web</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for restaurant in restaurants %}
+                <tr>
+                    <td>{{ restaurant.id }}</td>
+                    <td>{{ restaurant.name }}</td>
+                    <td>{{ restaurant.address }}</td>
+                    <td>{{ restaurant.phone }}</td>
+                    <td>{{ restaurant.website }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="showEditRestaurantForm({{ restaurant.id }})">Modifier</button>
+                            <form method="post" action="?page=restaurants" class="d-inline">
+                                <input type="hidden" name="action" value="delete_restaurant">
+                                <input type="hidden" name="restaurant_id" value="{{ restaurant.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                            </form>
+                        </div>
+                        <form id="editRestaurantForm-{{ restaurant.id }}" class="hidden mt-2" method="post" action="?page=restaurants">
+                            <input type="hidden" name="action" value="edit_restaurant">
+                            <input type="hidden" name="restaurant_id" value="{{ restaurant.id }}">
+                            <div class="form-group">
+                                <label for="name-{{ restaurant.id }}">Nom</label>
+                                <input type="text" class="form-control" id="name-{{ restaurant.id }}" name="name" value="{{ restaurant.name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="address-{{ restaurant.id }}">Adresse</label>
+                                <input type="text" class="form-control" id="address-{{ restaurant.id }}" name="address" value="{{ restaurant.address }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone-{{ restaurant.id }}">Téléphone</label>
+                                <input type="text" class="form-control" id="phone-{{ restaurant.id }}" name="phone" value="{{ restaurant.phone }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="website-{{ restaurant.id }}">Site Web</label>
+                                <input type="text" class="form-control" id="website-{{ restaurant.id }}" name="website" value="{{ restaurant.website }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="hideEditRestaurantForm({{ restaurant.id }})">Annuler</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function showEditRestaurantForm(restaurantId) {
+            document.getElementById('editRestaurantForm-' + restaurantId).classList.remove('hidden');
+        }
+
+        function hideEditRestaurantForm(restaurantId) {
+            document.getElementById('editRestaurantForm-' + restaurantId).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

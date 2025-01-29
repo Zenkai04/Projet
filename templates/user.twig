@@ -9,6 +9,10 @@
         .hidden {
             display: none;
         }
+        body {
+            padding-top: 20px;
+            padding-bottom: 70px;
+        }
     </style>
 </head>
 <body>
@@ -28,13 +32,21 @@
                 <li class="nav-item">
                     <a class="nav-link" href="?page=contact">Contact</a>
                 </li>
+                {% if user.role == 'administrator' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=restaurants">Restaurants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=userAdmin">Utilisateurs</a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="?page=deconnexion">Déconnexion</a>
                 </li>
             </ul>
             {% if user %}
             <span class="navbar-text ml-auto">
-                Bonjour, {{ user.prenom }} {{ user.nom }}
+                <a href="?page=user&id={{ user.id }}" class="text-decoration-none">Bonjour, {{ user.prenom }} {{ user.nom }}</a>
             </span>
             {% endif %}
         </div>
@@ -56,7 +68,8 @@
         <p><strong>Pseudo :</strong> {{ user.pseudo }}</p>
         <button id="editButton" class="btn btn-secondary">Modifier</button>
 
-        <form id="editForm" class="hidden" method="post" action="?page=user">
+        <form id="editForm" class="hidden" method="post" action="?page=user&id={{ user.id }}">
+            <input type="hidden" name="action" value="edit_user">
             <div class="form-group">
                 <label for="nom">Nom</label>
                 <input type="text" class="form-control" id="nom" name="nom" value="{{ user.nom }}" required>
@@ -89,8 +102,7 @@
         {% if user.reservations %}
             <ul>
                 {% for reservation in user.reservations %}
-                    <li>
-                        Restaurant: {{ reservation.restaurantName }}, Nombre de personnes: {{ reservation.nbPersonnes }}, Date et Heure: {{ reservation.dateHeure }}
+                    <li>Restaurant: {{ reservation.restaurantName }}, Nombre de personnes: {{ reservation.nbPersonnes }}, Date et Heure: {{ reservation.dateHeure }}
                         <button class="btn btn-secondary btn-sm" onclick="showEditReservationForm({{ reservation.id }})">Modifier</button>
                         <form method="post" action="?page=user" class="d-inline">
                             <input type="hidden" name="action" value="delete_reservation">

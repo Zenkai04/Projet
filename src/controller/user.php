@@ -6,7 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-$userId = $_SESSION['user_id'] ?? null;
+$userId = $_GET['id'] ?? $_SESSION['user_id'] ?? null;
 
 if (!$userId) {
     header('Location: ?page=accueil');
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $_SESSION['error_message'] = 'Erreur lors de l\'annulation de la réservation.';
             }
-        } else {
+        } elseif ($_POST['action'] == 'edit_user') {
             $nom = $_POST['nom'] ?? '';
             $prenom = $_POST['prenom'] ?? '';
             $email = $_POST['email'] ?? '';
@@ -50,12 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        header('Location: ?page=user');
+        header('Location: ?page=user&id=' . $userId);
         exit;
     }
 }
 
 $userDetails = getUserDetailsById($userId);
+
+if (!$userDetails) {
+    $_SESSION['error_message'] = 'Utilisateur non trouvé.';
+    header('Location: ?page=userAdmin');
+    exit;
+}
 
 $data = [
     'user' => $userDetails,

@@ -19,7 +19,10 @@
                 <label for="dateHeure">Date et Heure</label>
                 <input type="datetime-local" class="form-control" id="dateHeure" name="dateHeure" required>
             </div>
-            <button type="submit" class="btn btn-primary">Réserver</button>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Réserver</button>
+                <a href="?page=details&id={{ restaurant.id }}" class="btn btn-secondary">Annuler</a>
+            </div>
         </form>
     </div>
 </body>

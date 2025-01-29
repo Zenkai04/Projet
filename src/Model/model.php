@@ -455,4 +455,88 @@ function deleteReservation($reservationId) {
         die('Erreur SQL : ' . $e->getMessage());
     }
 }
+
+// Fonction qui récupère tous les utilisateurs
+function getAllUsers() {
+    global $pdo;
+    try {
+        $req = $pdo->query('SELECT * FROM users');
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui récupère tous les restaurants
+function getAllRestaurants() {
+    global $pdo;
+    try {
+        $req = $pdo->query('SELECT * FROM restaurants');
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui modifie un restaurant
+function updateRestaurant($restaurantId, $name, $address, $phone, $website) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('UPDATE restaurants SET name = :name, address = :address, phone = :phone, website = :website WHERE id = :restaurantId');
+        $req->execute([
+            'name' => $name,
+            'address' => $address,
+            'phone' => $phone,
+            'website' => $website,
+            'restaurantId' => $restaurantId,
+        ]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui supprime un restaurant
+function deleteRestaurant($restaurantId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('DELETE FROM restaurants WHERE id = :restaurantId');
+        $req->execute(['restaurantId' => $restaurantId]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui supprime un utilisateur
+function deleteUser($userId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('DELETE FROM users WHERE id = :userId');
+        $req->execute(['userId' => $userId]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+function getTopRatedRestaurants() {
+    global $pdo;
+    try {
+        $req = $pdo->query('
+            SELECT r.id, r.name, r.address, AVG(rt.rate) as average_rating
+            FROM restaurants r
+            JOIN rate rt ON r.id = rt.idRestaurant
+            GROUP BY r.id, r.name, r.address
+            ORDER BY average_rating DESC
+            LIMIT 5
+        ');
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
 ?>

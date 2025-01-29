@@ -1,20 +1,21 @@
 <?php
 require_once __DIR__ . '/../model/twig.php';
+require_once __DIR__ . '/../model/model.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+$topRatedRestaurants = getTopRatedRestaurants();
+
 $data = [
-    'current_page' => 'accueil',
-    'success_message' => $_GET['success_message'] ?? null,
-    'error_message' => $_GET['error_message'] ?? null,
+    'topRatedRestaurants' => $topRatedRestaurants,
+    'user' => $_SESSION['user'] ?? null,
+    'success_message' => $_SESSION['success_message'] ?? null,
+    'error_message' => $_SESSION['error_message'] ?? null,
 ];
 
-// Add user information to the data array
-if (isset($_SESSION['user'])) {
-    $data['user'] = $_SESSION['user'];
-}
+unset($_SESSION['success_message'], $_SESSION['error_message']);
 
 return $data;
 ?>
