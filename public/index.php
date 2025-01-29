@@ -46,6 +46,10 @@ switch ($page) {
         $data = array_merge($data, require_once __DIR__ . '/../src/controller/reserver.php');
         $template = 'reserver.twig';
         break;
+    case 'user':
+        $data = array_merge($data, require_once __DIR__ . '/../src/controller/user.php');
+        $template = 'user.twig';
+        break;
     case 'deconnexion':
         session_destroy();
         header('Location: ?page=connexion-inscription');

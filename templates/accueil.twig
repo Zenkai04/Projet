@@ -52,7 +52,7 @@
             </ul>
             {% if user %}
             <span class="navbar-text ml-auto">
-                Bonjour, {{ user.prenom }} {{ user.nom }}
+                <a href="?page=user" class="text-decoration-none">Bonjour, {{ user.prenom }} {{ user.nom }}</a>
             </span>
             {% endif %}
         </div>

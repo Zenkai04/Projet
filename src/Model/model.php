@@ -336,4 +336,123 @@ function reserveTable($idUser, $idRestaurant, $nbPersonnes, $dateHeure) {
         die('Erreur SQL : ' . $e->getMessage());
     }
 }
+
+// Fonction qui récupère toutes les informations concernant un utilisateur à partir de son identifiant
+function getUserDetailsById($userId) {
+    global $pdo;
+    try {
+        // Récupérer les informations de base de l'utilisateur
+        $userReq = $pdo->prepare('SELECT * FROM users WHERE id = :userId');
+        $userReq->execute(['userId' => $userId]);
+        $user = $userReq->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            return null; // Utilisateur non trouvé
+        }
+
+        // Récupérer les réservations de l'utilisateur avec le nom du restaurant
+        $reservationsReq = $pdo->prepare('
+            SELECT r.*, res.name AS restaurantName 
+            FROM reservations r
+            JOIN restaurants res ON r.idRestaurant = res.id
+            WHERE r.idUser = :userId
+        ');
+        $reservationsReq->execute(['userId' => $userId]);
+        $reservations = $reservationsReq->fetchAll(PDO::FETCH_ASSOC);
+
+        // Récupérer les notations de l'utilisateur avec le nom du restaurant
+        $ratingsReq = $pdo->prepare('
+            SELECT rt.*, res.name AS restaurantName 
+            FROM rate rt
+            JOIN restaurants res ON rt.idRestaurant = res.id
+            WHERE rt.idUser = :userId
+        ');
+        $ratingsReq->execute(['userId' => $userId]);
+        $ratings = $ratingsReq->fetchAll(PDO::FETCH_ASSOC);
+
+        // Ajouter les réservations et les notations aux informations de l'utilisateur
+        $user['reservations'] = $reservations;
+        $user['ratings'] = $ratings;
+
+        return $user;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+function updateUserDetails($userId, $nom, $prenom, $email, $pseudo, $currentPassword, $newPassword) {
+    global $pdo;
+    try {
+        // Vérifier si l'email ou le pseudo est déjà utilisé par un autre utilisateur
+        $req = $pdo->prepare('SELECT COUNT(*) FROM users WHERE (email = :email OR pseudo = :pseudo) AND id != :userId');
+        $req->execute(['email' => $email, 'pseudo' => $pseudo, 'userId' => $userId]);
+        if ($req->fetchColumn() > 0) {
+            return ['error' => 'Email ou pseudo déjà utilisé par un autre utilisateur.'];
+        }
+
+        // Vérifier le mot de passe actuel si un nouveau mot de passe est fourni
+        if ($newPassword) {
+            $req = $pdo->prepare('SELECT password FROM users WHERE id = :userId');
+            $req->execute(['userId' => $userId]);
+            $user = $req->fetch(PDO::FETCH_ASSOC);
+            if (!password_verify($currentPassword, $user['password'])) {
+                return ['error' => 'Mot de passe actuel incorrect.'];
+            }
+            $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        }
+
+        // Mettre à jour les informations de l'utilisateur
+        $req = $pdo->prepare('
+            UPDATE users
+            SET nom = :nom, prenom = :prenom, email = :email, pseudo = :pseudo' .
+            ($newPassword ? ', password = :newPassword' : '') .
+            ' WHERE id = :userId
+        ');
+        $params = [
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'email' => $email,
+            'pseudo' => $pseudo,
+            'userId' => $userId,
+        ];
+        if ($newPassword) {
+            $params['newPassword'] = $newPasswordHash;
+        }
+        $req->execute($params);
+
+        return ['success' => 'Informations mises à jour avec succès.'];
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui modifie une réservation
+function updateReservation($reservationId, $nbPersonnes, $dateHeure) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('UPDATE reservations SET nbPersonnes = :nbPersonnes, dateHeure = :dateHeure WHERE id = :reservationId');
+        $req->execute([
+            'nbPersonnes' => $nbPersonnes,
+            'dateHeure' => $dateHeure,
+            'reservationId' => $reservationId,
+        ]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
+
+// Fonction qui supprime une réservation
+function deleteReservation($reservationId) {
+    global $pdo;
+    try {
+        $req = $pdo->prepare('DELETE FROM reservations WHERE id = :reservationId');
+        $req->execute(['reservationId' => $reservationId]);
+
+        return true;
+    } catch (PDOException $e) {
+        die('Erreur SQL : ' . $e->getMessage());
+    }
+}
 ?>

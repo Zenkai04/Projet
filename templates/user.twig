@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Utilisateur - LyonEats</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="?page=accueil">LyonEats</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=accueil">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=recherche">Chercher</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?page=deconnexion">Déconnexion</a>
+                </li>
+            </ul>
+            {% if user %}
+            <span class="navbar-text ml-auto">
+                Bonjour, {{ user.prenom }} {{ user.nom }}
+            </span>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Profil Utilisateur</h2>
+
+        {% if success_message %}
+            <div class="alert alert-success">{{ success_message }}</div>
+        {% endif %}
+        {% if error_message %}
+            <div class="alert alert-danger">{{ error_message }}</div>
+        {% endif %}
+
+        <p><strong>Nom :</strong> {{ user.nom }}</p>
+        <p><strong>Prénom :</strong> {{ user.prenom }}</p>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>Pseudo :</strong> {{ user.pseudo }}</p>
+        <button id="editButton" class="btn btn-secondary">Modifier</button>
+
+        <form id="editForm" class="hidden" method="post" action="?page=user">
+            <div class="form-group">
+                <label for="nom">Nom</label>
+                <input type="text" class="form-control" id="nom" name="nom" value="{{ user.nom }}" required>
+            </div>
+            <div class="form-group">
+                <label for="prenom">Prénom</label>
+                <input type="text" class="form-control" id="prenom" name="prenom" value="{{ user.prenom }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+            <div class="form-group">
+                <label for="pseudo">Pseudo</label>
+                <input type="text" class="form-control" id="pseudo" name="pseudo" value="{{ user.pseudo }}" required>
+            </div>
+            <div class="form-group">
+                <label for="current_password">Mot de passe actuel</label>
+                <input type="password" class="form-control" id="current_password" name="current_password">
+            </div>
+            <div class="form-group">
+                <label for="new_password">Nouveau mot de passe</label>
+                <input type="password" class="form-control" id="new_password" name="new_password">
+            </div>
+            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            <button type="button" id="cancelButton" class="btn btn-secondary">Annuler</button>
+        </form>
+
+        <h3>Réservations</h3>
+        {% if user.reservations %}
+            <ul>
+                {% for reservation in user.reservations %}
+                    <li>
+                        Restaurant: {{ reservation.restaurantName }}, Nombre de personnes: {{ reservation.nbPersonnes }}, Date et Heure: {{ reservation.dateHeure }}
+                        <button class="btn btn-secondary btn-sm" onclick="showEditReservationForm({{ reservation.id }})">Modifier</button>
+                        <form method="post" action="?page=user" class="d-inline">
+                            <input type="hidden" name="action" value="delete_reservation">
+                            <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Annuler</button>
+                        </form>
+                        <form id="editReservationForm-{{ reservation.id }}" class="hidden" method="post" action="?page=user">
+                            <input type="hidden" name="action" value="edit_reservation">
+                            <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                            <div class="form-group">
+                                <label for="nbPersonnes-{{ reservation.id }}">Nombre de personnes</label>
+                                <input type="number" class="form-control" id="nbPersonnes-{{ reservation.id }}" name="nbPersonnes" value="{{ reservation.nbPersonnes }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dateHeure-{{ reservation.id }}">Date et Heure</label>
+                                <input type="datetime-local" class="form-control" id="dateHeure-{{ reservation.id }}" name="dateHeure" value="{{ reservation.dateHeure|date('Y-m-d\TH:i') }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="hideEditReservationForm({{ reservation.id }})">Annuler</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aucune réservation effectuée.</p>
+        {% endif %}
+
+        <h3>Notations</h3>
+        {% if user.ratings %}
+            <ul>
+                {% for rating in user.ratings %}
+                    <li>Restaurant: {{ rating.restaurantName }}, Note: {{ rating.rate }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aucune notation effectuée.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('editButton').addEventListener('click', function() {
+            document.getElementById('editForm').classList.remove('hidden');
+            document.getElementById('editButton').classList.add('hidden');
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', function() {
+            document.getElementById('editForm').classList.add('hidden');
+            document.getElementById('editButton').classList.remove('hidden');
+        });
+
+        function showEditReservationForm(reservationId) {
+            document.getElementById('editReservationForm-' + reservationId).classList.remove('hidden');
+        }
+
+        function hideEditReservationForm(reservationId) {
+            document.getElementById('editReservationForm-' + reservationId).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
