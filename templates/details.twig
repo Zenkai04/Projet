@@ -60,8 +60,10 @@
             <h1>{{ restaurant.name }}</h1>
             <p>Adresse: {{ restaurant.address }}</p>
             <p>Téléphone: {{ restaurant.phone }}</p>
-            {% if restaurant.website %}
+            {% if restaurant.website != "Non fourni" and restaurant.website != "no website" %}
                 <p>Site Web: <a href="{{ restaurant.website }}" target="_blank">{{ restaurant.website }}</a></p>
+            {% else %}
+                <p>Site Web: Non disponible</p>
             {% endif %}
             <p>Cuisine: {{ restaurant.cuisine }}</p>
             <p>Prix : {{ restaurant.prix }}</p>
